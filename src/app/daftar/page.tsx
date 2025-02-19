@@ -130,22 +130,10 @@ export default function SignUp() {
           <button
             type="submit"
             disabled={loading}
-            className="w-40 mx-auto mt-8 flex items-center justify-center space-x-2 bg-[#B5D1E2] text-[#1E2A39] py-2 px-6 rounded-full hover:bg-[#9BBFD3] transition-colors disabled:opacity-50"
+            className="w-30 mx-auto mt-8 flex items-center justify-center space-x-2 bg-[#B5D1E2] text-[#1E2A39] py-2 px-6 rounded-full hover:bg-[#9BBFD3] transition-colors disabled:opacity-50"
           >
             <span>Daftar</span>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="20" 
-              height="20" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
+            <Image src="/img/masuk.png" alt="Masuk" width={20} height={20} />
           </button>
         </form>
       </div>
