@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function InfoAnda() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [formData, setFormData] = useState({
-    usia: '',
-    bb: '',
-    tb: ''
+    usia: "",
+    bb: "",
+    tb: "",
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Cek status login
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const currentUser = localStorage.getItem('currentUser');
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const currentUser = localStorage.getItem("currentUser");
 
     if (!isLoggedIn || !currentUser) {
-      router.push('/masuk');
+      router.push("/masuk");
       return;
     }
 
@@ -40,16 +40,21 @@ export default function InfoAnda() {
     setLoading(true);
 
     try {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      
+      const currentUser = JSON.parse(
+        localStorage.getItem("currentUser") || "{}"
+      );
+
       // Simpan data ke localStorage
-      localStorage.setItem(`infoAnda_${currentUser.email}`, JSON.stringify(formData));
-      
+      localStorage.setItem(
+        `infoAnda_${currentUser.email}`,
+        JSON.stringify(formData)
+      );
+
       // Redirect ke halaman chatbot (ubah dari /konsultasi ke /chatbot)
-      router.push('/chatbot');
+      router.push("/chatbot");
     } catch (error) {
-      console.error('Error saving data:', error);
-      alert('Terjadi kesalahan saat menyimpan data');
+      console.error("Error saving data:", error);
+      alert("Terjadi kesalahan saat menyimpan data");
     } finally {
       setLoading(false);
     }
@@ -57,9 +62,9 @@ export default function InfoAnda() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -84,6 +89,7 @@ export default function InfoAnda() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
+            Usia Anda (tahun):
             <input
               type="number"
               id="usia"
@@ -97,6 +103,7 @@ export default function InfoAnda() {
           </div>
 
           <div>
+            Berat Badan (kg):
             <input
               type="number"
               id="bb"
@@ -110,6 +117,7 @@ export default function InfoAnda() {
           </div>
 
           <div>
+            Tinggi Badan (cm):
             <input
               type="number"
               id="tb"
