@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface UserData {
   username: string;
@@ -16,29 +17,31 @@ export default function InfoAkun() {
   const router = useRouter();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [userData, setUserData] = useState<UserData>({
-    username: '',
-    email: '',
-    usia: '',
-    tb: '',
-    bb: ''
+    username: "",
+    email: "",
+    usia: "",
+    tb: "",
+    bb: "",
   });
   const [passwords, setPasswords] = useState({
-    current: '',
-    new: '',
-    confirm: ''
+    current: "",
+    new: "",
+    confirm: "",
   });
 
   useEffect(() => {
     // Load user data from localStorage
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userInfo = JSON.parse(localStorage.getItem(`infoAnda_${currentUser.email}`) || '{}');
-    
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+    const userInfo = JSON.parse(
+      localStorage.getItem(`infoAnda_${currentUser.email}`) || "{}"
+    );
+
     setUserData({
-      username: currentUser.username || '',
-      email: currentUser.email || '',
-      usia: userInfo.usia || '',
-      tb: userInfo.tb || '',
-      bb: userInfo.bb || ''
+      username: currentUser.username || "",
+      email: currentUser.email || "",
+      usia: userInfo.usia || "",
+      tb: userInfo.tb || "",
+      bb: userInfo.bb || "",
     });
   }, []);
 
@@ -47,17 +50,19 @@ export default function InfoAkun() {
       // Validasi password baru jika diisi
       if (passwords.new || passwords.confirm) {
         if (passwords.new !== passwords.confirm) {
-          alert('Password baru dan konfirmasi password tidak cocok!');
+          alert("Password baru dan konfirmasi password tidak cocok!");
           return;
         }
       }
 
       // Update data user di localStorage
-      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      const currentUser = JSON.parse(
+        localStorage.getItem("currentUser") || "{}"
+      );
       const updatedUser = {
         ...currentUser,
         username: userData.username,
-        email: userData.email
+        email: userData.email,
       };
 
       // Update password jika ada perubahan
@@ -65,26 +70,29 @@ export default function InfoAkun() {
         updatedUser.password = passwords.new;
       }
 
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
 
       // Update info tambahan user
       const userInfo = {
         usia: userData.usia,
         tb: userData.tb,
-        bb: userData.bb
+        bb: userData.bb,
       };
-      localStorage.setItem(`infoAnda_${userData.email}`, JSON.stringify(userInfo));
+      localStorage.setItem(
+        `infoAnda_${userData.email}`,
+        JSON.stringify(userInfo)
+      );
 
-      alert('Data berhasil disimpan!');
+      alert("Data berhasil disimpan!");
     } catch (error) {
-      alert('Terjadi kesalahan saat menyimpan data');
+      alert("Terjadi kesalahan saat menyimpan data");
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentUser');
-    router.push('/');
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
+    router.push("/");
   };
 
   return (
@@ -103,10 +111,13 @@ export default function InfoAkun() {
           </button>
           {showUserMenu && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-10">
-              <button
-                className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 w-full"
-              >
-                <Image src="/img/akun.png" alt="Account" width={20} height={20} />
+              <button className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 w-full">
+                <Image
+                  src="/img/akun.png"
+                  alt="Account"
+                  width={20}
+                  height={20}
+                />
                 <span>Akun saya</span>
               </button>
               <button
@@ -123,7 +134,9 @@ export default function InfoAkun() {
 
       {/* Content */}
       <div className="max-w-xl mx-auto p-0">
-        <h1 className="text-2xl font-semibold text-[#112A46] mb-3">Edit Informasi Akun</h1>
+        <h1 className="text-2xl font-semibold text-[#112A46] mb-3">
+          Edit Informasi Akun
+        </h1>
 
         <div className="space-y-1">
           <div>
@@ -131,7 +144,9 @@ export default function InfoAkun() {
             <input
               type="text"
               value={userData.username}
-              onChange={(e) => setUserData({...userData, username: e.target.value})}
+              onChange={(e) =>
+                setUserData({ ...userData, username: e.target.value })
+              }
               className="w-full max-w-sm p-2 border bg-gray-100 rounded-lg"
               readOnly
             />
@@ -142,7 +157,9 @@ export default function InfoAkun() {
             <input
               type="email"
               value={userData.email}
-              onChange={(e) => setUserData({...userData, email: e.target.value})}
+              onChange={(e) =>
+                setUserData({ ...userData, email: e.target.value })
+              }
               className="w-full max-w-sm p-2 border bg-gray-100 rounded-lg"
               readOnly
             />
@@ -154,21 +171,27 @@ export default function InfoAkun() {
               type="password"
               placeholder="password sekarang"
               value={passwords.current}
-              onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+              onChange={(e) =>
+                setPasswords({ ...passwords, current: e.target.value })
+              }
               className="w-full max-w-sm p-2 border bg-gray-100 rounded-lg mb-2"
             />
             <input
               type="password"
               placeholder="Password baru"
               value={passwords.new}
-              onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+              onChange={(e) =>
+                setPasswords({ ...passwords, new: e.target.value })
+              }
               className="w-full max-w-sm p-2 border bg-gray-100 rounded-lg mb-2"
             />
             <input
               type="password"
               placeholder="Konfirmasi password baru"
               value={passwords.confirm}
-              onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
+              onChange={(e) =>
+                setPasswords({ ...passwords, confirm: e.target.value })
+              }
               className="w-full max-w-sm p-2 border bg-gray-100 rounded-lg"
             />
           </div>
@@ -181,7 +204,9 @@ export default function InfoAkun() {
                   <input
                     type="text"
                     value={userData.usia}
-                    onChange={(e) => setUserData({...userData, usia: e.target.value})}
+                    onChange={(e) =>
+                      setUserData({ ...userData, usia: e.target.value })
+                    }
                     className="w-12 p-2 bg-transparent outline-none"
                   />
                   <span className="pr-2 text-gray-500">th</span>
@@ -194,7 +219,9 @@ export default function InfoAkun() {
                   <input
                     type="text"
                     value={userData.tb}
-                    onChange={(e) => setUserData({...userData, tb: e.target.value})}
+                    onChange={(e) =>
+                      setUserData({ ...userData, tb: e.target.value })
+                    }
                     className="w-12 p-2 bg-transparent outline-none"
                   />
                   <span className="pr-2 text-gray-500">cm</span>
@@ -207,7 +234,9 @@ export default function InfoAkun() {
                   <input
                     type="text"
                     value={userData.bb}
-                    onChange={(e) => setUserData({...userData, bb: e.target.value})}
+                    onChange={(e) =>
+                      setUserData({ ...userData, bb: e.target.value })
+                    }
                     className="w-12 p-2 bg-transparent outline-none"
                   />
                   <span className="pr-2 text-gray-500">kg</span>
@@ -217,7 +246,12 @@ export default function InfoAkun() {
           </div>
 
           <div className="flex justify-center space-x-8">
-            <button 
+            <Link href="/doctor/chatbot">
+              <button className="px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90">
+                Saya seorang dokter
+              </button>
+            </Link>
+            <button
               onClick={() => router.back()}
               className="px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90"
             >

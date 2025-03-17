@@ -116,26 +116,15 @@ export default function Chatbot() {
   useEffect(() => {
     if (!userData.name || !userEmail) return; // Wait until userData is set
 
-    const fetchInitialMessage = async () => {
-      try {
-        const response = await initializeChat({
-          session_id: userEmail,
-          context: JSON.stringify(userData),
-        });
-
-        const message = response.data.message;
-
-        setMessages((prevMessages) =>
-          prevMessages.map((msg) =>
-            msg.id === 1 ? { ...msg, content: message } : msg
-          )
-        );
-      } catch (error) {
-        console.error("Error fetching initial message:", error);
-      }
-    };
-
-    fetchInitialMessage();
+    // Set initial message directly without API call
+    setMessages([
+      {
+        id: 1,
+        content: "Ada yang bisa saya bantu?",
+        isUser: false,
+        timestamp: new Date(),
+      },
+    ]);
   }, [userData, userEmail]);
 
   // Load chat history
@@ -144,7 +133,7 @@ export default function Chatbot() {
 
     if (currentUser.email) {
       const savedHistory = JSON.parse(
-        localStorage.getItem(`chatHistory_${currentUser.email}`) || "[]"
+        localStorage.getItem(`chatHistoryDoctor_${currentUser.email}`) || "[]"
       );
 
       setChatHistory(savedHistory);
@@ -152,7 +141,6 @@ export default function Chatbot() {
   }, []);
 
   const handleSendMessage = async (e: React.FormEvent) => {
-    console.log(gejala);
     e.preventDefault();
     if (!inputMessage.trim() || isProcessing) return;
 
@@ -171,93 +159,16 @@ export default function Chatbot() {
       setMessages((prev) => [...prev, newUserMessage]);
       setInputMessage(""); // Clear input immediately for better UX
 
-      let botResponse = "Maaf, saya tidak mengerti pertanyaan anda.";
+      // Simply call diagnoseApi with the user's message
+      const diagnosisResponse = await diagnoseApi({
+        question: userQuery,
+        session_id: `${userEmail}_doctor_${sessionId}`,
+        email: userEmail,
+      });
 
-      if (isDiagnosis) {
-        // Already in diagnosis mode - no need to check symptoms again
-        console.log(diagnosis);
-        const response = await chatBotApi({
-          human_messages: userQuery,
-          session_id: `${userEmail}_konsultasi_${sessionId}`,
-          is_diagnose: true,
-          context: JSON.stringify(userData),
-          disease_context: diagnosis,
-        });
-
-        botResponse = response.data.message || botResponse;
-      } else {
-        // Not yet in diagnosis mode - check if message is a symptom
-        const isSymptomResponse = await checkSymptoms({
-          human_messages: userQuery,
-          session_id: `${userEmail}_symptom_${sessionId}`,
-        });
-
-        if (isSymptomResponse.is_symptoms && gejala.length <= 4) {
-          console.log(
-            "Symptom detected with message and symptomp:",
-            userQuery,
-            isSymptomResponse.symptoms
-          );
-          // This is a symptom - process it and collect symptoms
-          const response = await chatBotApi({
-            human_messages: userQuery,
-            session_id: `${userEmail}_symptom_${sessionId}`,
-            is_diagnose: false,
-            context: JSON.stringify(userData),
-            disease_context: "",
-          });
-
-          // Extract and store symptoms
-          if (
-            response.data.symptoms_summary?.gejala &&
-            Array.isArray(response.data.symptoms_summary.gejala)
-          ) {
-            response.data.symptoms_summary.gejala.forEach((symptom: string) => {
-              addGejala(symptom);
-            });
-          }
-
-          botResponse = response.data.message || botResponse;
-        } else {
-          // Not a symptom - transition to diagnosis mode if we have symptoms
-          if (gejala.length === 0) {
-            // No symptoms collected yet
-            botResponse =
-              "Maaf, saya belum mendeteksi gejala yang Anda alami. Silakan ceritakan lebih detail tentang gejala yang Anda rasakan.";
-          } else {
-            console.log("Diagnostic mode activated:", gejala);
-            // We have symptoms, proceed to diagnosis
-            setIsDiagnosis(true);
-
-            // First, get diagnosis
-            const diagnosisResponse = await diagnoseApi({
-              question: `Anda seorang dokter. Anda bertugas untuk diagnosis penyakit berdasarkan gejala pasien. Jelaskan selengkap-lengkapnya penyakit tersebut, diagnosis formal, faktor risiko, perawatan, dan obatnya. Jelaskan penyakit dalam bahasa Indonesia. Apabila lebih dari 1 kemungkinan penyakit, jelaskan maksimal 3 kemungkinan penyakitnya. Gejala yang dirasakan pasien: ${gejala.join(
-                ", "
-              )}`,
-              session_id: `${userEmail}_diagnosis_${sessionId}`,
-              email: userEmail,
-            });
-
-            const finalDiagnosis = diagnosisResponse.data.message;
-            setDiagnosis(finalDiagnosis);
-
-            // Then, get consultation response - always use standard diagnosis request first time
-            const standardDiagnosisRequest =
-              "Jelaskan penyakit saya dan perawatannya dok";
-
-            // Use standard diagnosis request for first consultation
-            const response = await chatBotApi({
-              human_messages: standardDiagnosisRequest, // Use standard message for first diagnosis
-              session_id: `${userEmail}_konsultasi_${sessionId}`,
-              is_diagnose: true,
-              context: JSON.stringify(userData),
-              disease_context: finalDiagnosis,
-            });
-
-            botResponse = response.data.message || botResponse;
-          }
-        }
-      }
+      const botResponse =
+        diagnosisResponse.data.message ||
+        "Maaf, saya tidak mengerti pertanyaan anda.";
 
       // Add bot response
       setMessages((prev) => [
@@ -303,7 +214,7 @@ export default function Chatbot() {
         const userEmail = currentUser.email;
 
         const existingHistory = JSON.parse(
-          localStorage.getItem(`chatHistory_${userEmail}`) || "[]"
+          localStorage.getItem(`chatHistoryDoctor_${userEmail}`) || "[]"
         );
 
         const newHistory: ChatHistory = {
@@ -318,7 +229,7 @@ export default function Chatbot() {
         const updatedHistory = [newHistory, ...existingHistory];
 
         localStorage.setItem(
-          `chatHistory_${userEmail}`,
+          `chatHistoryDoctor_${userEmail}`,
           JSON.stringify(updatedHistory)
         );
         setChatHistory(updatedHistory);
@@ -343,24 +254,17 @@ export default function Chatbot() {
       );
       const userEmail = currentUser.email;
 
-      const response = await initializeChat({
-        session_id: userEmail,
-        context: JSON.stringify(userData),
-      });
-
-      const message = response.data.message;
-
-      // Update the first message
+      // Set hardcoded message instead of API call
       setMessages([
         {
           id: 1,
-          content: message,
+          content: "Ada yang bisa saya bantu?",
           isUser: false,
           timestamp: new Date(),
         },
       ]);
     } catch (error) {
-      console.error("Error fetching initial message:", error);
+      console.error("Error setting initial message:", error);
     }
   };
 

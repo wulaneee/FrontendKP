@@ -137,14 +137,17 @@ export async function clearChatHistory({
 export async function checkSymptoms({
   human_messages,
   model = process.env.NEXT_PUBLIC_CHATBOT_MODEL || "",
+  session_id,
 }: {
   human_messages: string;
   model?: string;
+  session_id: string;
 }) {
   try {
     const formData = new FormData();
     formData.append("human_messages", human_messages);
     formData.append("model", model);
+    formData.append("session_id", session_id);
 
     const response = await fetch("http://127.0.0.1:8000/check-symptoms", {
       method: "POST",
