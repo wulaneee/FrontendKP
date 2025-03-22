@@ -99,9 +99,7 @@ export default function InfoAkun() {
     <main className="min-h-screen bg-white">
       {/* Header */}
       <div className="flex justify-between items-center p-4">
-        <div className="flex items-center space-x-2">
-          <Image src="/img/history.png" alt="Back" width={30} height={30} />
-        </div>
+        <div className="flex items-center space-x-2"></div>
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
@@ -245,21 +243,26 @@ export default function InfoAkun() {
             </div>
           </div>
 
-          <div className="flex justify-center space-x-8">
+          <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-6 md:space-y-0">
             <Link href="/doctor/chatbot">
-              <button className="px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90">
+              <button className="w-full md:w-auto px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90">
                 Saya seorang dokter
+              </button>
+            </Link>
+            <Link href="/chatbot">
+              <button className="w-full md:w-auto px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90">
+                Saya seorang pasien
               </button>
             </Link>
             <button
               onClick={() => router.back()}
-              className="px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90"
+              className="w-full md:w-auto px-6 py-2 bg-[#112A46] text-white rounded-lg hover:bg-opacity-90"
             >
               Batal
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-[#ACC8E5] text-[#FFFCFC] rounded-lg hover:bg-opacity-90"
+              className="w-full md:w-auto px-6 py-2 bg-[#ACC8E5] text-[#FFFCFC] rounded-lg hover:bg-opacity-90"
             >
               Simpan perubahan
             </button>

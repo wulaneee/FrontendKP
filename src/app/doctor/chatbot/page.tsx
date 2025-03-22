@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 import {
   chatBotApi,
   diagnoseApi,
@@ -34,6 +35,10 @@ const getChatTimeGroup = (date: Date) => {
   if (date.toDateString() === today.toDateString()) return "Hari ini";
   if (date.toDateString() === yesterday.toDateString()) return "Kemarin";
   return date.toLocaleDateString(); // Return formatted date for older chats
+};
+
+const formatMarkdownList = (text: string) => {
+  return text.replace(/(\d+)\.\s/g, "➣$1. "); // Ensure a newline before numbers
 };
 
 export default function Chatbot() {
@@ -460,7 +465,11 @@ export default function Chatbot() {
                   ${message.isUser ? "bubble-right" : "bubble-left"}
                 `}
               >
-                <div className="whitespace-pre-line">{message.content}</div>
+                <div className="whitespace-pre-line">
+                  <ReactMarkdown>
+                    {formatMarkdownList(message.content)}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           ))}
